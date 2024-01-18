@@ -61,8 +61,11 @@ class Crawler:
             soup = BeautifulSoup(response.text, 'html.parser')
             post_links = [link['href'] for link in soup.find_all('link')]
 
-            with ThreadPoolExecutor(max_workers=2) as executor:
-                executor.map(self.fetch_and_save_post, post_links)
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                executor.map(self.fetch_and_save_post, post_links[:len(post_links)//2])
+
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                executor.map(self.fetch_and_save_post, post_links[len(post_links)//2:])
 
 
 @app.command()
